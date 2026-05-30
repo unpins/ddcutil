@@ -56,3 +56,9 @@ The first invocation will offer to add the [unpins.cachix.org](https://unpins.ca
 ## Manual download
 
 The [Releases](https://github.com/unpins/ddcutil/releases) page has standalone binaries for manual download.
+
+## Build notes
+
+- **Linux-only:** ddcutil drives monitors through the `i2c-dev` kernel interface and enumerates devices via `libudev`/`sysfs`, both kernel-locked — there is no macOS or Windows port.
+- **Man page:** embedded in the binary (`.unpin_man`); read it with `unpin man ddcutil`.
+- **Tests:** no native suite runs. ddcutil defines no automake `TESTS=` target, so `make check` only *compiles* the libddcutil API sample clients (never runs them); its real testcases need a live monitor on the i2c bus, which CI can't provide. Upstream (and nixpkgs) ship with checks off, and we match.
