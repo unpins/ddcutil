@@ -1,6 +1,6 @@
 # ddcutil
 
-Standalone build of [ddcutil](https://www.ddcutil.com/), a tool to query and change Linux monitor settings (brightness, contrast, input source, …) over DDC/CI and USB.
+Standalone build of [ddcutil](https://www.ddcutil.com/), a program to query and change Linux monitor settings (brightness, contrast, input source, …) over DDC/CI and USB.
 
 [![CI](https://github.com/unpins/ddcutil/actions/workflows/ddcutil.yml/badge.svg)](https://github.com/unpins/ddcutil/actions)
 ![Linux](https://img.shields.io/badge/Linux-✓-success?logo=linux&logoColor=white)
