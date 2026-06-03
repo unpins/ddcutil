@@ -24,18 +24,10 @@ ddcutil environment            # probe the runtime environment (no monitor neede
 
 Run `ddcutil` as root, or add your user to the `i2c` group and install the udev rules from the [upstream docs](https://www.ddcutil.com/i2c_permissions/).
 
-## Installation
-
-Install with [unpin](https://github.com/unpins/unpin):
+To install it onto your PATH:
 
 ```bash
-unpin ddcutil
-```
-
-Or run without installing:
-
-```bash
-unpin run ddcutil
+unpin install ddcutil
 ```
 
 ## Build locally

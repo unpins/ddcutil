@@ -32,6 +32,15 @@
             "ac_cv_func_malloc_0_nonnull=yes"
             "ac_cv_func_realloc_0_nonnull=yes"
           ];
+          # ddcutil 2.2.7 (nixpkgs 26.05) hard-includes <execinfo.h> in
+          # linux_util.c for its crash-backtrace helper. That header (and
+          # backtrace/backtrace_symbols) is a glibc extension absent from
+          # musl, so the static build fails with "execinfo.h: No such file".
+          # libexecinfo provides both the header and a musl-compatible
+          # backtrace implementation; add it and link -lexecinfo explicitly
+          # (ddcutil's link line assumes backtrace lives in libc).
+          buildInputs = (old.buildInputs or [ ]) ++ [ p.libexecinfo ];
+          NIX_LDFLAGS = (old.NIX_LDFLAGS or "") + " -lexecinfo";
         });
     };
 }
