@@ -51,6 +51,6 @@ The [Releases](https://github.com/unpins/ddcutil/releases) page has standalone b
 
 ## Build notes
 
-- **Linux-only:** ddcutil drives monitors through the `i2c-dev` kernel interface and enumerates devices via `libudev`/`sysfs`, both kernel-locked — there is no macOS or Windows port.
+- **Linux-only:** no macOS or Windows port (see the kernel-interface note above).
 - **Man page:** embedded in the binary (`.unpin_man`); read it with `unpin man ddcutil`.
 - **Tests:** no native suite runs. ddcutil defines no automake `TESTS=` target, so `make check` only *compiles* the libddcutil API sample clients (never runs them); its real testcases need a live monitor on the i2c bus, which CI can't provide. Upstream (and nixpkgs) ship with checks off, and we match.
