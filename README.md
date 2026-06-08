@@ -1,11 +1,11 @@
 # ddcutil
 
-Standalone build of [ddcutil](https://www.ddcutil.com/), a program to query and change Linux monitor settings (brightness, contrast, input source, …) over DDC/CI and USB.
+[ddcutil](https://www.ddcutil.com/), a program to query and change Linux monitor settings (brightness, contrast, input source, …) over DDC/CI and USB. A single self-contained binary, built natively for Linux.
 
 [![CI](https://github.com/unpins/ddcutil/actions/workflows/ddcutil.yml/badge.svg)](https://github.com/unpins/ddcutil/actions)
 ![Linux](https://img.shields.io/badge/Linux-✓-success?logo=linux&logoColor=white)
 
-Part of the [unpins](https://unpins.org) project — native single-binary builds with no third-party runtime dependencies.
+Part of the [unpins](https://unpins.org) catalog; install it with [`unpin`](https://github.com/unpins/unpin): `unpin install ddcutil`.
 
 Linux-only: ddcutil drives external monitors through the `i2c-dev` kernel interface and enumerates devices via `libudev`/`sysfs`, both kernel-locked.
 
