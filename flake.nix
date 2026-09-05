@@ -52,6 +52,11 @@
         # of unreachable paths is not a feature disable.
         removeReferences = [ "glib-static" "libx11-static" "dbus-static" "ddcutil-static" ];
       };
+      # `--enable-systemd` (upstream default yes) turns itself off here, because
+      # libsystemd is not in the static set. Nothing is lost: it only compiles
+      # src/util/systemd_util.c, whose journal reader is called from a single
+      # `#ifdef ALT` block that 2.2.7 never defines -- the live path shells out
+      # to `journalctl --no-pager --boot` instead.
       linuxOnly = true;
       smoke = [ "--version" ];
       smokePattern = "ddcutil";

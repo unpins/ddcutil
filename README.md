@@ -22,7 +22,23 @@ ddcutil capabilities           # dump the monitor's DDC capability string
 ddcutil environment            # probe the runtime environment (no monitor needed)
 ```
 
-Run `ddcutil` as root, or add your user to the `i2c` group and install the udev rules from the [upstream docs](https://www.ddcutil.com/i2c_permissions/).
+Run `ddcutil` as root, or set up access once so you don't have to:
+
+```bash
+sudo groupadd --system i2c                                  # if it doesn't exist yet
+sudo usermod -aG i2c "$USER"                                # log out and back in after this
+echo i2c-dev | sudo tee /etc/modules-load.d/ddcutil.conf    # load the module at boot
+sudo tee /etc/udev/rules.d/60-ddcutil-i2c.rules >/dev/null <<'RULES'
+SUBSYSTEM=="i2c-dev", KERNEL=="i2c-[0-9]*", GROUP="i2c", MODE="0660"
+SUBSYSTEM=="i2c-dev", KERNEL=="i2c-[0-9]*", ATTRS{class}=="0x03*", TAG+="uaccess"
+SUBSYSTEM=="dri", KERNEL=="card[0-9]*", TAG+="uaccess"
+RULES
+```
+
+These are the files a distribution's ddcutil package installs for you, and a
+single binary can't. `ddcutil environment` tells you what is still missing; the
+[upstream page](https://www.ddcutil.com/i2c_permissions/) covers the unusual
+cases.
 
 To install it onto your PATH:
 
@@ -52,5 +68,9 @@ The [Releases](https://github.com/unpins/ddcutil/releases) page has standalone b
 ## Build notes
 
 - **Linux-only:** no macOS or Windows port (see the kernel-interface note above).
-- **Man page:** embedded in the binary (`.unpin_man`); read it with `unpin man ddcutil`.
+- **Device names in `ddcutil environment`:** the vendor and model names of your
+  video card are read from the system's `pci.ids` database (`/usr/share/hwdata`
+  on most distributions). Without it that one report shows numeric IDs instead;
+  everything else, including talking to monitors, is unaffected.
+- **Man page:** embedded in the binary — read it with `unpin man ddcutil`.
 - **Tests:** no native suite runs. ddcutil defines no automake `TESTS=` target, so `make check` only *compiles* the libddcutil API sample clients (never runs them); its real testcases need a live monitor on the i2c bus, which CI can't provide. Upstream (and nixpkgs) ship with checks off, and we match.
