@@ -62,21 +62,11 @@
       smokePattern = "ddcutil";
       build = pkgs:
         let
-          # libX11 (pulled by ddcutil's optional X11 display-name support, via
-          # libXrandr/libXext and dbus) has a configure probe that checks whether
-          # its cpp needs -undef to stop predefining `unix`. The engine's clang
-          # cpp keeps `unix` defined even under -undef, so the probe aborts
-          # ("defines unix with or without -undef. I don't know what to do."). That
-          # RAWCPP only preprocesses X11's host-independent locale/compose text at
-          # build time, so hand it the build-host gcc cpp (which honors -undef);
-          # libX11 links into ddcutil as a plain static .a regardless of which cpp
-          # cooked its data. Patch it set-wide so libXrandr/libXext/dbus share the
-          # fixed libX11. (Keeping X11 is a deliberate call — it maps DDC displays
-          # to XRandR screen names.)
+          # (Keeping X11 is a deliberate call — it maps DDC displays to XRandR
+          # screen names. libx11's RAWCPP probe, which the engine's clang cpp
+          # breaks, is fixed set-wide in nix-lib; this flake used to carry its
+          # own copy of that override.)
           p = pkgs.pkgsStatic.extend (final: prev: {
-            libx11 = prev.libx11.overrideAttrs (_: {
-              RAWCPP = "${final.buildPackages.stdenv.cc}/bin/cpp";
-            });
             # glib (core containers) and audit (pulled via dbus) each list `bash`
             # in buildInputs purely to patchShebangs their bash-completion /
             # wrapper scripts — audit even declares `disallowedRequisites=[bash]`
