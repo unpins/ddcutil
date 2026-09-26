@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [2.2.7-2] - 2026-09-26
+
 ### Fixed
 
 - The binary quoted directories from the machine that built it — paths under
