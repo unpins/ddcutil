@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- The README said nixpkgs ships ddcutil with its checks off; nixpkgs runs no
+  test suite either, only a no-op `installcheck`. Usage now opens with
+  `unpin ddcutil`, and the man page has its own section.
+
 ## [2.2.7-2] - 2026-09-26
 
 ### Fixed

@@ -11,6 +11,19 @@ Linux-only: ddcutil drives external monitors through the `i2c-dev` kernel interf
 
 ## Usage
 
+Run the `ddcutil` program with [unpin](https://github.com/unpins/unpin):
+
+```bash
+unpin ddcutil environment      # probe the runtime environment (no monitor needed)
+unpin ddcutil detect           # list monitors reachable over DDC/CI
+```
+
+To install it onto your PATH:
+
+```bash
+unpin install ddcutil
+```
+
 ddcutil talks to monitors over the I²C bus, which needs the `i2c-dev` kernel module loaded and read/write access to `/dev/i2c-*`:
 
 ```bash
@@ -19,7 +32,6 @@ ddcutil detect                 # list monitors reachable over DDC/CI
 ddcutil getvcp 10              # read brightness (VCP feature 0x10)
 ddcutil setvcp 10 50           # set brightness to 50%
 ddcutil capabilities           # dump the monitor's DDC capability string
-ddcutil environment            # probe the runtime environment (no monitor needed)
 ```
 
 Run `ddcutil` as root, or set up access once so you don't have to:
@@ -40,11 +52,9 @@ single binary can't. `ddcutil environment` tells you what is still missing; the
 [upstream page](https://www.ddcutil.com/i2c_permissions/) covers the unusual
 cases.
 
-To install it onto your PATH:
+## Man pages
 
-```bash
-unpin install ddcutil
-```
+`ddcutil.1` is embedded in the binary — read it with `unpin man ddcutil`.
 
 ## Build locally
 
@@ -72,5 +82,4 @@ The [Releases](https://github.com/unpins/ddcutil/releases) page has standalone b
   video card are read from the system's `pci.ids` database (`/usr/share/hwdata`
   on most distributions). Without it that one report shows numeric IDs instead;
   everything else, including talking to monitors, is unaffected.
-- **Man page:** embedded in the binary — read it with `unpin man ddcutil`.
-- **Tests:** no native suite runs. ddcutil defines no automake `TESTS=` target, so `make check` only *compiles* the libddcutil API sample clients (never runs them); its real testcases need a live monitor on the i2c bus, which CI can't provide. Upstream (and nixpkgs) ship with checks off, and we match.
+- **Tests:** ddcutil's testcases are not run: they need a live monitor on the I²C bus. Upstream defines no `make check` suite (it only compiles the libddcutil sample clients), and nixpkgs runs none either — its `installcheck` is a no-op.
