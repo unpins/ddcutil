@@ -66,25 +66,7 @@
           # screen names. libx11's RAWCPP probe, which the engine's clang cpp
           # breaks, is fixed set-wide in nix-lib; this flake used to carry its
           # own copy of that override.)
-          p = pkgs.pkgsStatic.extend (final: prev: {
-            # glib (core containers) and audit (pulled via dbus) each list `bash`
-            # in buildInputs purely to patchShebangs their bash-completion /
-            # wrapper scripts — audit even declares `disallowedRequisites=[bash]`
-            # on its real outputs, so neither ever links it. Under pkgsStatic
-            # `bash` = bashInteractive → `bash-interactive-static`, whose readline
-            # objects don't survive a static-pie link on ppc64le/armv7l
-            # (R_PPC64_TOC16_LO / R_ARM_REL32 against `__progname` etc., "recompile
-            # with -fPIC"). The completion scripts we never ship don't need a
-            # target bash at all, so point both at the build-host bash — a dead
-            # shebang ref, scrubbed in the 0-ref binary. Same move as
-            # nix-lib/cosmo/zstd.nix. Keeps every feature; only removes an
-            # un-linkable static bash from the graph.
-            glib = prev.glib.override { bash = final.buildPackages.bash; };
-            audit = prev.audit.override {
-              bash = final.buildPackages.bash;
-              bashNonInteractive = final.buildPackages.bashNonInteractive;
-            };
-          });
+          p = pkgs.pkgsStatic;
         in
         p.ddcutil.overrideAttrs (old: {
           configureFlags = (old.configureFlags or [ ]) ++ [
