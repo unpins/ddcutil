@@ -10,12 +10,6 @@
 
   # Query/change monitor settings via DDC/CI + USB. Linux-only (i2c-dev +
   # libudev device enumeration are kernel-locked).
-  #
-  # ddcutil's autoconf checks `malloc(0) == NULL` and, since musl returns
-  # NULL there, flips on `#define malloc rpl_malloc` — but no gnulib supplies
-  # rpl_malloc, so the build breaks on implicit-decl. Tell autoconf the
-  # system malloc is fine (musl is POSIX-correct: NULL for size 0 is legal).
-  # Same for realloc. See [[feedback_autoconf_rpl_malloc_musl]].
   outputs = { self, unpins-lib }:
     unpins-lib.lib.mkStandaloneFlake {
       inherit self;
@@ -48,27 +42,29 @@
         # gettext, …). Scrub those dead refs so the binary is truly 0-ref, exactly
         # as the other tier-1 packages. All features stay intact (verified: smoke
         # green after the scrub); this removes build-host path strings, not
-        # functionality. See [[feedback_dont_disable_features_silently]] — a scrub
-        # of unreachable paths is not a feature disable.
+        # functionality.
         removeReferences = [ "glib-static" "libx11-static" "dbus-static" "ddcutil-static" ];
       };
-      # `--enable-systemd` (upstream default yes) turns itself off here, because
-      # libsystemd is not in the static set. Nothing is lost: it only compiles
-      # src/util/systemd_util.c, whose journal reader is called from a single
-      # `#ifdef ALT` block that 2.2.7 never defines -- the live path shells out
-      # to `journalctl --no-pager --boot` instead.
       linuxOnly = true;
       smoke = [ "--version" ];
       smokePattern = "ddcutil";
       build = pkgs:
         let
-          # (Keeping X11 is a deliberate call — it maps DDC displays to XRandR
-          # screen names. libx11's RAWCPP probe, which the engine's clang cpp
-          # breaks, is fixed set-wide in nix-lib; this flake used to carry its
-          # own copy of that override.)
+          # Keeping X11 is a deliberate call: it maps DDC displays to XRandR screen names.
           p = pkgs.pkgsStatic;
         in
         p.ddcutil.overrideAttrs (old: {
+          # `--enable-systemd` (upstream default yes) turns itself off here, because
+          # libsystemd is not in the static set. Nothing is lost: it only compiles
+          # src/util/systemd_util.c, whose journal reader is called from a single
+          # `#ifdef ALT` block that 2.2.7 never defines -- the live path shells out
+          # to `journalctl --no-pager --boot` instead.
+          #
+          # ddcutil's autoconf checks `malloc(0) == NULL` and, since musl returns
+          # NULL there, flips on `#define malloc rpl_malloc` — but no gnulib supplies
+          # rpl_malloc, so the build breaks on implicit-decl. Tell autoconf the
+          # system malloc is fine (musl is POSIX-correct: NULL for size 0 is legal).
+          # Same for realloc.
           configureFlags = (old.configureFlags or [ ]) ++ [
             "ac_cv_func_malloc_0_nonnull=yes"
             "ac_cv_func_realloc_0_nonnull=yes"
